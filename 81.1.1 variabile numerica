@@ -1,0 +1,24 @@
+import matplotlib.pyplot as plt
+
+# Verifica se la tabella 'transactions' è stata caricata
+if 'df_transactions' in globals():
+    df_transactions = globals()['df_transactions']
+    
+    # Seleziona la colonna numerica
+    amount = df_transactions['amount']
+    
+    # Verifica valori nulli
+    print(f"Valori nulli nella colonna 'amount': {amount.isnull().sum()}")
+    
+    # Crea un istogramma con Matplotlib
+    plt.figure(figsize=(10, 6))
+    plt.hist(amount, bins=30, color='skyblue', edgecolor='black')
+    plt.title('Distribuzione della Variabile Amount', fontsize=16)
+    plt.xlabel('Amount', fontsize=12)
+    plt.ylabel('Frequenza', fontsize=12)
+    plt.grid(axis='y', alpha=0.75)
+    plt.show()
+    
+  
+else:
+    print("La tabella 'transactions' non è stata caricata correttamente.")
