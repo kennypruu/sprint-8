@@ -1,0 +1,66 @@
+import pandas
+import sqlalchemy
+import keyboard
+import getpass
+
+def create_database_connection(user, password, host, database_name):
+    try:
+        engine = sqlalchemy.create_engine(f"mysql+pymysql://{user}:{password}@{host}/{database_name}")
+        connection = engine.connect()
+        print("\nConexión a la base de datos establecida con éxito.\n")
+        return engine, connection
+    except Exception as e:
+        print("\nError en la conexión a la base de datos:\n",e)
+        return None, None
+
+def get_table_names(engine):
+    inspector = sqlalchemy.inspect(engine)
+    table_names = inspector.get_table_names()
+    if table_names:
+        print("Tablas encontradas en la base de datos:", table_names)
+    else:
+        print(f"User: {user} \nContraseña: (correcta)\nHost: {host} \nDatabase: {database_name}")
+        print("\nNinguna tabla encontrada en la base de datos.\n\nSalida del programa")
+    return table_names
+
+def load_tables_into_dataframes(connection, table_names):
+    for table_name in table_names:
+        query = f"SELECT * FROM {table_name}"
+        globals()[f"df_{table_name}"] = pandas.read_sql(query, connection)
+    print("\nDatos cargados con éxito en DataFrame.")
+
+def display_dataframes(table_names):
+    print("\nContenido de las tablas:")
+    for table_name in table_names:
+        df_name = f"df_{table_name}"
+        df = globals()[df_name]
+        
+        print("\n**************************************\n**************************************")
+        print(f"Tabla: {table_name}")
+        print("\n**************************************\n**************************************")
+        print("\n***********Información general:***********\n")
+        print(df.info(), "\n")        
+        print("\n**********************Primeras 3 filas:**********************\n\n", df.head(3), "\n")
+        print("\n**********************Últimas 3 filas:**********************\n\n", df.tail(3), "\n")
+
+print("Programa para la conexión a una base de datos MySQL y la visualización de sus tablas en DataFrame utilizando la biblioteca Pandas.")
+print("Presiona 'Esc' para salir.")
+
+user = input("Introduce el nombre de usuario para la base de datos (ej: root)")
+if not keyboard.is_pressed('esc'):
+    password = getpass.getpass("Introduce la contraseña para la base de datos (ej:****)")
+if not keyboard.is_pressed('esc'):
+    host = input("Introduce el host de la base de datos (ej: localhost)")
+if not keyboard.is_pressed('esc'):
+    database_name = input("Introduce el nombre de la base de datos (ej: sprint_4_v2)")
+
+if not keyboard.is_pressed('esc'):
+    engine, connection = create_database_connection(user, password, host, database_name)
+    if connection:
+        table_names = get_table_names(engine)
+        if table_names:
+            load_tables_into_dataframes(connection, table_names)
+            display_dataframes(table_names)
+
+if keyboard.is_pressed('esc'):
+    print("Salida del programa")
