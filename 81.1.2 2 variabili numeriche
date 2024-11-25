@@ -1,0 +1,19 @@
+import matplotlib.pyplot as plt
+
+# Assumiamo che 'df_products' sia il DataFrame che contiene la tabella 'products'
+# Eseguiamo la conversione della colonna 'price' da oggetto a numerico
+
+# Rimuoviamo il simbolo del dollaro e convertiamo il resto in numerico
+df_products['price_numeric'] = df_products['price'].replace({'\$': '', ',': ''}, regex=True).astype(float)
+
+# Verifica la conversione
+print(df_products[['price', 'price_numeric']].head())
+
+# Crea un grafico a dispersione (scatter plot) per relazionare 'price_numeric' con 'weight'
+plt.figure(figsize=(10, 6))
+plt.scatter(df_products['weight'], df_products['price_numeric'], color='blue', alpha=0.6)
+plt.title('Relazione tra il Prezzo e il Peso dei Prodotti', fontsize=16)
+plt.xlabel('Peso (kg)', fontsize=12)
+plt.ylabel('Prezzo ($)', fontsize=12)
+plt.grid(True)
+plt.show()
